@@ -203,11 +203,10 @@ def main(hosts):
 			save_history(hosts, traces)
 			return EXIT_OK
 		else: 
-			print "Current trace does NOT match stored trace"
-			#save_history(hosts, traces)
+			print "(%s <-> %s): Current trace does NOT match stored trace" % tuple(hosts)
 			return EXIT_CRITICAL
 	else:
-		print "Current trace matches stored trace: no problem found"
+		print "(%s <-> %s): Current trace matches stored trace, no problem found" % tuple(hosts)
 		return EXIT_OK
 
 if __name__ == "__main__":
