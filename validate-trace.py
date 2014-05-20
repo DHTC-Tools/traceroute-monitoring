@@ -27,6 +27,7 @@ for h in valid_hosts:
 	usage += "\t" + h + "\n" 
 trace_url = "http://%s/toolkit/gui/reverse_traceroute.cgi?target=%s&function=traceroute"
 history_file_name = "/var/nagios/rw/valid_traces"
+#history_file_name = "valid_traces"
 verbosity = 1
 set_new_valid = False
 
@@ -204,7 +205,20 @@ def main(hosts):
 			return EXIT_OK
 		else: 
 			print "(%s <-> %s): Current trace does NOT match stored trace" % tuple(hosts)
-			return EXIT_CRITICAL
+                        
+                        # Print the trace comparison
+                        print "Expected ... Current"
+                        for host in hosts:
+                                print "From: " + host
+                                for i in range(max(len(history[host]), len(traces[host]))):
+                                        if i < len(history[host]):
+                                                print history[host][i] + " ... ",
+                                        else: print "[N/A] ... ",
+                                        if i < len(traces[host]):
+                                                print traces[host][i]
+                                        else: print "[N/A]"
+                        
+                        return EXIT_CRITICAL
 	else:
 		print "(%s <-> %s): Current trace matches stored trace, no problem found" % tuple(hosts)
 		return EXIT_OK
