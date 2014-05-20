@@ -206,18 +206,19 @@ def main(hosts):
 		else: 
 			print "(%s <-> %s): Current trace does NOT match stored trace" % tuple(hosts)
                         
-                        # Print the trace comparison
-                        print "Expected ... Current"
-                        for host in hosts:
-                                print "From: " + host
-                                for i in range(max(len(history[host]), len(traces[host]))):
-                                        if i < len(history[host]):
-                                                print history[host][i] + " ... ",
-                                        else: print "[N/A] ... ",
-                                        if i < len(traces[host]):
-                                                print traces[host][i]
-                                        else: print "[N/A]"
-                        
+                        if verbosity >= 2:
+                                # Print the trace comparison
+                                print "Expected ... Current"
+                                for host in hosts:
+                                        print "From: " + host
+                                        for i in range(max(len(history[host]), len(traces[host]))):
+                                                if i < len(history[host]):
+                                                        print history[host][i] + " ... ",
+                                                else: print "[N/A] ... ",
+                                                if i < len(traces[host]):
+                                                        print traces[host][i]
+                                                else: print "[N/A]"
+                                                
                         return EXIT_CRITICAL
 	else:
 		print "(%s <-> %s): Current trace matches stored trace, no problem found" % tuple(hosts)
