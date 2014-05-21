@@ -206,7 +206,7 @@ def main(hosts):
 		else: 
 			print "(%s <-> %s): Current trace does NOT match stored trace" % tuple(hosts)
                         
-                        if verbosity >= 2:
+                        if verbosity >= 1:
                                 # Print the trace comparison
                                 print "Expected ... Current"
                                 for host in hosts:
