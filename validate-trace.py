@@ -208,7 +208,7 @@ def main(hosts):
                         
                         if verbosity >= 1:
                                 # Print the trace comparison
-                                print "Expected ... Current"
+                                print "\n[ Expected ... Current ]"
                                 for host in hosts:
                                         print "From: " + host
                                         for i in range(max(len(history[host]), len(traces[host]))):
