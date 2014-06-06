@@ -224,9 +224,10 @@ def main(hosts):
 
 			# Log the comparison
 			try:
-				with open(log_file_name, "a+") as logfile:
-					logfile.write("\n" + time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-					logfile.write(comparison + "\n")
+				logfile = open(log_file_name, "a+")
+				logfile.write("\n" + time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
+				logfile.write(comparison + "\n")
+				logfile.close()
 			except:
 				print "Unable to open " + log_file_name
 			return EXIT_CRITICAL
