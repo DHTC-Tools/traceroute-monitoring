@@ -223,9 +223,12 @@ def main(hosts):
 				print comparison
 
 			# Log the comparison
-			with open(log_file_name, "a+") as logfile:
-				logfile.write("\n" + time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-				logfile.write(comparison + "\n")
+			try:
+				with open(log_file_name, "a+") as logfile:
+					logfile.write("\n" + time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
+					logfile.write(comparison + "\n")
+			except:
+				print "Unable to open " + log_file_name
 			return EXIT_CRITICAL
 	else:
 		print "(%s <-> %s): Current trace matches stored trace, no problem found" % tuple(hosts)
