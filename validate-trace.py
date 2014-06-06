@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import sys, urllib2, re, os, getopt, socket
+import sys, urllib2, re, os, getopt, socket, time
 
 EXIT_OK = 0
 EXIT_WARNING = 1
@@ -27,6 +27,7 @@ for h in valid_hosts:
 	usage += "\t" + h + "\n" 
 trace_url = "http://%s/toolkit/gui/reverse_traceroute.cgi?target=%s&function=traceroute"
 history_file_name = "/var/nagios/rw/valid_traces"
+log_file_name = "/var/log/reverse_trace.log"
 #history_file_name = "valid_traces"
 verbosity = 1
 set_new_valid = False
@@ -87,7 +88,7 @@ def get_history(hosts):
 			history_file = open(history_file_name, "w+")
 	except:
 		print "Unable to open history file: " + history_file_name
-		sys.exit(EXIT_UNKNOWN);
+		sys.exit(EXIT_UNKNOWN)
 
 	lines = history_file.readlines()
 	history_file.close()
@@ -205,21 +206,27 @@ def main(hosts):
 			return EXIT_OK
 		else: 
 			print "(%s <-> %s): Current trace does NOT match stored trace" % tuple(hosts)
-                        
-                        if verbosity >= 1:
-                                # Print the trace comparison
-                                print "\n[ Expected ... Current ]"
-                                for host in hosts:
-                                        print "From: " + host
-                                        for i in range(max(len(history[host]), len(traces[host]))):
-                                                if i < len(history[host]):
-                                                        print history[host][i] + " ... ",
-                                                else: print "[N/A] ... ",
-                                                if i < len(traces[host]):
-                                                        print traces[host][i]
-                                                else: print "[N/A]"
-                                                
-                        return EXIT_CRITICAL
+			# Compare the traces
+			comparison = "\n"
+			comparison += "[ Expected ... Current ]\n"
+			for host in hosts:
+			        comparison += "From: " + host + "\n"
+			        for i in range(max(len(history[host]), len(traces[host]))):
+			                if i < len(history[host]):
+			                        comparison += history[host][i] + " ... "
+			                else: comparison += "[N/A] ... "
+			                if i < len(traces[host]):
+			                        comparison += traces[host][i] + "\n"
+			                else: comparison += "[N/A]\n"
+
+			if verbosity >= 1:
+				print comparison
+
+			# Log the comparison
+			with open(log_file_name, "a+") as logfile:
+				logfile.write("\n" + time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
+				logfile.write(comparison + "\n")
+			return EXIT_CRITICAL
 	else:
 		print "(%s <-> %s): Current trace matches stored trace, no problem found" % tuple(hosts)
 		return EXIT_OK
