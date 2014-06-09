@@ -73,15 +73,10 @@ def parse_hops(trace):
 	# This complicated regex gets the IPs from the traceroute lines
 	# Or it gets the '* * *' of failed hops (in group 2)
 	re_ips = re.compile(r"^\s*\d+(?:[^\(]*\(([^\)]*)|\s+(\*\s\*\s\*))")
-	timeout_acknowledged = False
 	for line in trace.split("\n"):
 		result = re_ips.match(line.strip())
 		if result and result.group(1):
 			IPs.append(result.group(1))
-		elif not timeout_acknowledged:
-			IPs.append("Timeout")
-			timeout_acknowledged = True
-
 
 	return IPs
 
