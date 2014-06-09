@@ -73,10 +73,15 @@ def parse_hops(trace):
 	# This complicated regex gets the IPs from the traceroute lines
 	# Or it gets the '* * *' of failed hops (in group 2)
 	re_ips = re.compile(r"^\s*\d+(?:[^\(]*\(([^\)]*)|\s+(\*\s\*\s\*))")
+	timeout_acknowledged = False
 	for line in trace.split("\n"):
 		result = re_ips.match(line.strip())
-		if result:
-			IPs.append(result.group(2) or result.group(1))
+		if result and result.group(1):
+			IPs.append(result.group(1))
+		elif not timeout_acknowledged:
+			IPs.append("Timeout")
+			timeout_acknowledged = True
+
 
 	return IPs
 
@@ -208,16 +213,16 @@ def main(hosts):
 			print "(%s <-> %s): Current trace does NOT match stored trace" % tuple(hosts)
 			# Compare the traces
 			comparison = "\n"
-			comparison += "[ Expected ... Current ]\n"
+			comparison += "Between %s and %s\n[ Expected ... Current ]\n" % tuple(hosts)
 			for host in hosts:
-			        comparison += "From: " + host + "\n"
-			        for i in range(max(len(history[host]), len(traces[host]))):
-			                if i < len(history[host]):
-			                        comparison += history[host][i] + " ... "
-			                else: comparison += "[N/A] ... "
-			                if i < len(traces[host]):
-			                        comparison += traces[host][i] + "\n"
-			                else: comparison += "[N/A]\n"
+				comparison += "From: " + host + "\n"
+				for i in range(max(len(history[host]), len(traces[host]))):
+					if i < len(history[host]) and history[host][i] != "":
+						comparison += history[host][i] + " ... "
+					else: comparison += "[N/A] ... "
+					if i < len(traces[host]) and traces[host][i] != "":
+						comparison += traces[host][i] + "\n"
+					else: comparison += "[N/A]\n"
 
 			if verbosity >= 1:
 				print comparison
